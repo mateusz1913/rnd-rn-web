@@ -12,15 +12,17 @@ const config: webpack.Configuration = {
   ],
   plugins: [
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
-      '__DEV__': process.env.NODE_ENV !== 'production',
+      process: {
+        env: {},
+      },
+      __DEV__: process.env.NODE_ENV !== 'production',
     }),
   ],
   module: {
     rules: [
       {
         test: /\.(js|jsx|ts|tsx)$/,
-        exclude: /node_modules[/\\](?!react-native-vector-icons)/, // <- here add excluded modules
+        exclude: /node_modules[/\\](?!react-native-vector-icons|react-native-reanimated|react-native-gesture-handler)/, // <- here add excluded modules
         use: {
           loader: 'babel-loader',
           options: {
@@ -34,6 +36,8 @@ const config: webpack.Configuration = {
               '@babel/plugin-proposal-optional-chaining',
               '@babel/plugin-syntax-class-properties',
               'react-native-web',
+              // It has to be last in plugin list
+              'react-native-reanimated/plugin',
             ],
             presets: [
               // Here add all babel presets (e.g. env preset, react preset, typescript preset etc.);
@@ -41,7 +45,8 @@ const config: webpack.Configuration = {
                 '@babel/preset-env',
                 {
                   targets: { browsers: [ 'last 2 versions', 'ie >= 11' ]},
-                  corejs: '2.4.1',
+                  // If you have some problems with "cannot import 'core-js/modules/...' try to install core-js as dev dependency"
+                  corejs: 3,
                   useBuiltIns: 'usage',
                 },
               ],
